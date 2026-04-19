@@ -102,8 +102,15 @@ def send_email(subject, body, html_body=None):
     try:
         # Check if credentials exist
         if not EMAIL_USER or not EMAIL_PASSWORD:
-            print("Email credentials not configured. Skipping email.")
+            print("❌ Email credentials not configured. Skipping email.")
+            print(f"  EMAIL_USER: {bool(EMAIL_USER)}")
+            print(f"  EMAIL_PASSWORD: {bool(EMAIL_PASSWORD)}")
             return False
+        
+        print(f"📧 Email credentials found. Preparing message...")
+        print(f"  From: {EMAIL_USER}")
+        print(f"  To: {EMAIL_RECIPIENT}")
+        print(f"  Subject: {subject}")
         
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
@@ -117,16 +124,29 @@ def send_email(subject, body, html_body=None):
         if html_body:
             msg.attach(MIMEText(html_body, "html"))
         
+        print(f"📧 Connecting to Gmail SMTP server...")
         # Send via Gmail SMTP
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            print(f"📧 Connected. Logging in...")
             server.login(EMAIL_USER, EMAIL_PASSWORD)
+            print(f"📧 Logged in. Sending email...")
             server.sendmail(EMAIL_USER, EMAIL_RECIPIENT, msg.as_string())
         
-        print(f"Email sent to {EMAIL_RECIPIENT}")
+        print(f"✅ Email sent successfully to {EMAIL_RECIPIENT}")
         return True
         
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"❌ SMTP Authentication Error: {e}")
+        print(f"   Check that EMAIL_USER and EMAIL_PASSWORD are correct")
+        print(f"   For Gmail, use an App Password, not your regular password")
+        return False
+    except smtplib.SMTPException as e:
+        print(f"❌ SMTP Error: {e}")
+        return False
     except Exception as e:
-        print(f"Error sending email: {e}")
+        print(f"❌ Error sending email: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
