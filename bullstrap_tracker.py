@@ -14,10 +14,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Configuration
-PRODUCT_ID = "45519480127682"
-PRODUCT_URL = "https://bullstrap.co/products/the-new-contemporary-case-terra"
-PRODUCT_NAME = "The New Contemporary Case - TERRA"
-VARIANT_ID = "45519480127682"
+PRODUCT_ID = "46006040723650"
+PRODUCT_URL = "https://bullstrap.co/products/the-contemporary-plateau-sienna"     
+PRODUCT_NAME = "The Contemporary Plateau Sienna"
+VARIANT_ID = "46006040723650"
 
 # Email Configuration - uses environment variables (set in GitHub Secrets)
 EMAIL_USER = os.getenv("EMAIL_USER")
@@ -35,7 +35,7 @@ def fetch_price():
     """
     try:
         # Bullstrap uses Shopify - fetch product info
-        api_url = "https://bullstrap.co/products/the-new-contemporary-case-terra.json"
+        api_url = "https://bullstrap.co/products/the-contemporary-plateau-sienna.json"
         
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -53,7 +53,7 @@ def fetch_price():
         
         for variant in variants:
             # Match by variant ID or find TERRA variant
-            if str(variant.get("id")) == VARIANT_ID or "TERRA" in str(variant.get("title", "")):
+            if str(variant.get("id")) == VARIANT_ID or "SIENNA" in str(variant.get("title", "")):
                 target_variant = variant
                 break
         
