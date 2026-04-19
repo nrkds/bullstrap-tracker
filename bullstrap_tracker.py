@@ -14,10 +14,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Configuration
-PRODUCT_ID = "46006040723650"
-PRODUCT_URL = "https://bullstrap.co/products/the-contemporary-plateau-sienna"     
-PRODUCT_NAME = "The Contemporary Plateau Sienna"
-VARIANT_ID = "46006040723650"
+PRODUCT_ID = "45519480127682"
+PRODUCT_URL = "https://bullstrap.co/products/the-new-contemporary-case-terra"
+PRODUCT_NAME = "The New Contemporary Case - TERRA"
+VARIANT_ID = "45519480127682"
 
 # Email Configuration - uses environment variables (set in GitHub Secrets)
 EMAIL_USER = os.getenv("EMAIL_USER")
@@ -35,7 +35,7 @@ def fetch_price():
     """
     try:
         # Bullstrap uses Shopify - fetch product info
-        api_url = "https://bullstrap.co/products/the-contemporary-plateau-sienna.json"
+        api_url = "https://bullstrap.co/products/the-new-contemporary-case-terra.json"
         
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
@@ -53,7 +53,7 @@ def fetch_price():
         
         for variant in variants:
             # Match by variant ID or find TERRA variant
-            if str(variant.get("id")) == VARIANT_ID or "SIENNA" in str(variant.get("title", "")):
+            if str(variant.get("id")) == VARIANT_ID or "TERRA" in str(variant.get("title", "")):
                 target_variant = variant
                 break
         
@@ -213,6 +213,9 @@ def main():
     last_data = history.get("last_check", {})
     last_price = last_data.get("price")
     
+    # Check if this is first run (for test email)
+    is_first_run = not last_price
+    
     # Check if price changed
     price_changed = last_price and current_price != last_price
     
@@ -227,11 +230,66 @@ def main():
         )
         
         send_email(subject, body, html_body)
+    elif is_first_run:
+        # Send test email on first run to verify configuration
+        print(f"📧 First run detected - sending test email...")
+        
+        subject = f"✅ Bullstrap Price Tracker: Test Email (First Run)"
+        body = f"""
+Bullstrap Price Tracker Test Email
+
+This is a test email to verify your price tracker is working correctly.
+
+Product: {current_data['title']}
+URL: {PRODUCT_URL}
+
+Current Price: ${current_price:.2f}
+Stock Status: {'✅ In Stock' if current_data['available'] else '❌ Out of Stock'}
+
+Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+---
+Future emails will only be sent when the price changes.
+This is an automated price tracking alert.
+"""
+        
+        html_body = f"""
+<html>
+  <body style="font-family: Arial, sans-serif;">
+    <h2>✅ Bullstrap Price Tracker: Test Email (First Run)</h2>
+    <p>This is a test email to verify your price tracker is working correctly.</p>
+    
+    <table border="1" cellpadding="10" style="border-collapse: collapse;">
+      <tr>
+        <td><strong>Product</strong></td>
+        <td>{current_data['title']}</td>
+      </tr>
+      <tr>
+        <td><strong>URL</strong></td>
+        <td><a href="{PRODUCT_URL}">{PRODUCT_URL}</a></td>
+      </tr>
+      <tr>
+        <td><strong>Current Price</strong></td>
+        <td style="font-weight: bold;">${current_price:.2f}</td>
+      </tr>
+      <tr>
+        <td><strong>Stock Status</strong></td>
+        <td>{'✅ In Stock' if current_data['available'] else '❌ Out of Stock'}</td>
+      </tr>
+    </table>
+    
+    <p style="color: #666; margin-top: 20px; font-size: 12px;">
+      Future emails will only be sent when the price changes.<br>
+      Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    </p>
+  </body>
+</html>
+"""
+        
+        send_email(subject, body, html_body)
+        print(f"✓ Test email sent!")
     else:
-        if last_price:
-            print(f"✓ Price unchanged: ${current_price:.2f}")
-        else:
-            print(f"✓ First check recorded: ${current_price:.2f}")
+        print(f"✓ Price unchanged: ${current_price:.2f}")
     
     # Save current data
     history["last_check"] = current_data
