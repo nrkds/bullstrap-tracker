@@ -14,10 +14,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Configuration
-PRODUCT_ID = "45519480127682"
-PRODUCT_URL = "https://bullstrap.co/products/the-new-contemporary-case-terra"
-PRODUCT_NAME = "The New Contemporary Case - TERRA"
-VARIANT_ID = "45519480127682"
+PRODUCT_ID = "51683271377176"
+PRODUCT_URL = "https://lumazi.com/products/leather-magsafe-iphone-case"
+
+PRODUCT_NAME = "Lumazi leather case"
+VARIANT_ID = "51683271377176"
 
 # Email Configuration - uses environment variables (set in GitHub Secrets)
 EMAIL_USER = os.getenv("EMAIL_USER")
@@ -35,7 +36,7 @@ def fetch_price():
     """
     try:
         # Bullstrap uses Shopify - fetch product info
-        api_url = "https://bullstrap.co/products/the-new-contemporary-case-terra.json"
+        api_url = "https://lumazi.com/products/leather-magsafe-iphone-case.json"
         
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
